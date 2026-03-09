@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulateur de loyer — Marlon</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  #marlon-sim input[type=range] { -webkit-appearance:none!important;width:100%!important;height:4px!important;border-radius:10px!important;background:#e3e6ec!important;outline:none!important;cursor:pointer!important;margin-bottom:8px!important;display:block!important; }
+  #marlon-sim input[type=range]::-webkit-slider-thumb { -webkit-appearance:none!important;width:20px!important;height:20px!important;border-radius:50%!important;background:#00bd82!important;border:3px solid #fff!important;box-shadow:0 2px 8px rgba(0,189,130,0.4)!important;cursor:pointer!important; }
+  #marlon-sim input[type=number] { -moz-appearance:textfield!important; }
+  #marlon-sim input[type=number]::-webkit-inner-spin-button { -webkit-appearance:none!important; }
+  #marlon-sim input[type=number]:focus { border-color:#00bd82!important;outline:none!important; }
+  #marlon-sim .ms-dur-btn:hover { border-color:#00bd82!important;color:#222326!important; }
+  #marlon-sim .ms-dur-btn.active { background:#00bd82!important;border-color:#00bd82!important;color:#fff!important;box-shadow:0 4px 12px rgba(0,189,130,0.3)!important; }
+  #marlon-sim .ms-table-wrap { display:none;margin-top:14px;border:1px solid #e3e6ec;border-radius:12px;overflow:hidden; }
+  #marlon-sim .ms-table-wrap.open { display:block!important; }
+  #marlon-sim table { width:100%;border-collapse:collapse;font-size:13px;font-family:'Jost',sans-serif; }
+  #marlon-sim thead th { background:#012635;color:rgba(255,255,255,0.45);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;padding:11px 14px;text-align:right; }
+  #marlon-sim thead th:first-child { text-align:left; }
+  #marlon-sim tbody tr { border-bottom:1px solid #e3e6ec; }
+  #marlon-sim tbody tr:last-child { border-bottom:none; }
+  #marlon-sim tbody tr.ms-row-active { background:#edf7f3!important; }
+  #marlon-sim tbody td { padding:11px 14px;text-align:right;color:#222326; }
+  #marlon-sim tbody td:first-child { text-align:left;font-weight:600; }
+  #marlon-sim .td-green { color:#009e6d!important;font-weight:700!important; }
+  #marlon-sim .td-muted { color:#6a6d77!important; }
+  #marlon-sim .ms-cta:hover { background:#009e6d!important;transform:translateY(-2px)!important; }
+  @keyframes ms-bump { 0%{transform:scale(1)} 40%{transform:scale(1.04)} 100%{transform:scale(1)} }
+  #marlon-sim .ms-bump { animation:ms-bump 0.22s ease; }
+  @media(max-width:520px) { #marlon-sim{padding:20px!important} #marlon-sim .ms-loyer-num-ttc{font-size:40px!important} }
+</style>
+</head>
+<body>
+<div id="marlon-sim" style="font-family:'Jost',sans-serif;background:#f8f9fa;border-radius:16px;padding:32px;max-width:1400px;color:#6a6d77;box-sizing:border-box;">
+  <div style="background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(34,35,38,0.08),0 1px 4px rgba(34,35,38,0.04);padding:28px;margin-bottom:12px;">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#6a6d77;margin-bottom:10px;">Montant HT du matériel</div>
+    <div id="ms-montant-display" style="font-size:36px;font-weight:700;color:#222326;letter-spacing:-0.5px;margin-bottom:16px;">15 000 €</div>
+    <input type="range" id="ms-slider" min="1000" max="500000" step="500" value="15000">
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:#6a6d77;opacity:0.6;margin-bottom:14px;"><span>1 000 €</span><span>500 000 €</span></div>
+    <div style="position:relative;">
+      <input type="number" id="ms-input" value="15000" min="1000" max="500000" style="width:100%;padding:11px 52px 11px 16px;border:1.5px solid #e3e6ec;border-radius:10px;font-family:'Jost',sans-serif;font-size:14px;font-weight:500;color:#222326;background:#fff;box-sizing:border-box;transition:border-color 0.15s;">
+      <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:#6a6d77;opacity:0.5;pointer-events:none;">€ HT</span>
+    </div>
+  </div>
+  <div style="background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(34,35,38,0.08),0 1px 4px rgba(34,35,38,0.04);padding:28px;margin-bottom:12px;">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#6a6d77;margin-bottom:10px;">Durée du contrat</div>
+    <div id="ms-dur-group" style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="ms-dur-btn" data-val="36" style="flex:1;min-width:64px;padding:11px 6px;border:1.5px solid #e3e6ec;border-radius:10px;background:#fff;font-family:'Jost',sans-serif;font-size:14px;font-weight:600;color:#6a6d77;cursor:pointer;text-align:center;transition:all 0.15s;">36<br><small style="font-size:10px;font-weight:400;opacity:0.7;">mois</small></button>
+      <button class="ms-dur-btn" data-val="48" style="flex:1;min-width:64px;padding:11px 6px;border:1.5px solid #e3e6ec;border-radius:10px;background:#fff;font-family:'Jost',sans-serif;font-size:14px;font-weight:600;color:#6a6d77;cursor:pointer;text-align:center;transition:all 0.15s;">48<br><small style="font-size:10px;font-weight:400;opacity:0.7;">mois</small></button>
+      <button class="ms-dur-btn active" data-val="60" style="flex:1;min-width:64px;padding:11px 6px;border:1.5px solid #00bd82;border-radius:10px;background:#00bd82;font-family:'Jost',sans-serif;font-size:14px;font-weight:600;color:#fff;cursor:pointer;text-align:center;transition:all 0.15s;box-shadow:0 4px 12px rgba(0,189,130,0.3);">60<br><small style="font-size:10px;font-weight:400;opacity:0.85;">mois</small></button>
+      <button class="ms-dur-btn" data-val="72" style="flex:1;min-width:64px;padding:11px 6px;border:1.5px solid #e3e6ec;border-radius:10px;background:#fff;font-family:'Jost',sans-serif;font-size:14px;font-weight:600;color:#6a6d77;cursor:pointer;text-align:center;transition:all 0.15s;">72<br><small style="font-size:10px;font-weight:400;opacity:0.7;">mois</small></button>
+      <button class="ms-dur-btn" data-val="84" style="flex:1;min-width:64px;padding:11px 6px;border:1.5px solid #e3e6ec;border-radius:10px;background:#fff;font-family:'Jost',sans-serif;font-size:14px;font-weight:600;color:#6a6d77;cursor:pointer;text-align:center;transition:all 0.15s;">84<br><small style="font-size:10px;font-weight:400;opacity:0.7;">mois</small></button>
+    </div>
+  </div>
+  <div style="background:#012635;border-radius:16px;padding:28px;margin-bottom:12px;position:relative;overflow:hidden;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,0.35);margin-bottom:14px;">Mensualité estimée</div>
+    <div style="display:flex;align-items:flex-end;gap:20px;margin-bottom:6px;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#00bd82;margin-bottom:3px;">TTC</div>
+        <div style="display:flex;align-items:baseline;gap:4px;">
+          <span id="ms-ttc" class="ms-loyer-num-ttc" style="font-size:56px;font-weight:800;color:#fff;line-height:1;letter-spacing:-1.5px;">376</span>
+          <span style="font-size:22px;font-weight:700;color:#00bd82;">€</span>
+        </div>
+      </div>
+      <div style="width:1px;height:48px;background:rgba(255,255,255,0.1);align-self:center;flex-shrink:0;"></div>
+      <div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.3);margin-bottom:3px;">HT</div>
+        <div style="display:flex;align-items:baseline;gap:4px;">
+          <span id="ms-ht" style="font-size:30px;font-weight:700;color:rgba(255,255,255,0.35);line-height:1;letter-spacing:-0.5px;">313</span>
+          <span style="font-size:14px;font-weight:500;color:rgba(255,255,255,0.2);">€</span>
+        </div>
+      </div>
+    </div>
+    <div id="ms-period" style="font-size:12px;color:rgba(255,255,255,0.25);margin-bottom:22px;">/ mois pendant 60 mois</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:13px 14px;">
+        <div style="font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:rgba(255,255,255,0.28);margin-bottom:5px;">Total versé HT</div>
+        <div id="ms-total" style="font-size:16px;font-weight:700;color:#fff;">18 756 €</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:13px 14px;">
+        <div style="font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:rgba(255,255,255,0.28);margin-bottom:5px;">Coût du financement HT</div>
+        <div id="ms-cout" style="font-size:16px;font-weight:700;color:#00bd82;">3 756 €</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;">
+      <div style="display:inline-flex;align-items:center;gap:5px;padding:6px 13px;background:rgba(0,189,130,0.1);border:1px solid rgba(0,189,130,0.2);border-radius:999px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,0.6);white-space:nowrap;flex-shrink:0;"><span style="width:5px;height:5px;border-radius:50%;background:#00bd82;display:inline-block;"></span>Sans apport</div>
+      <div style="display:inline-flex;align-items:center;gap:5px;padding:6px 13px;background:rgba(0,189,130,0.1);border:1px solid rgba(0,189,130,0.2);border-radius:999px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,0.6);white-space:nowrap;flex-shrink:0;"><span style="width:5px;height:5px;border-radius:50%;background:#00bd82;display:inline-block;"></span>Loyers 100 % déductibles</div>
+      <div style="display:inline-flex;align-items:center;gap:5px;padding:6px 13px;background:rgba(0,189,130,0.1);border:1px solid rgba(0,189,130,0.2);border-radius:999px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,0.6);white-space:nowrap;flex-shrink:0;"><span style="width:5px;height:5px;border-radius:50%;background:#00bd82;display:inline-block;"></span>Avec option d'achat</div>
+      <div style="display:inline-flex;align-items:center;gap:5px;padding:6px 13px;background:rgba(0,189,130,0.1);border:1px solid rgba(0,189,130,0.2);border-radius:999px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,0.6);white-space:nowrap;flex-shrink:0;"><span style="width:5px;height:5px;border-radius:50%;background:#00bd82;display:inline-block;"></span>Trésorerie préservée</div>
+    </div>
+  </div>
+  <div style="margin-bottom:12px;">
+    <div id="ms-toggle" onclick="msToggleTable()" style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:16px 0 0;font-size:13px;font-weight:500;color:#6a6d77;user-select:none;">
+      <svg id="ms-toggle-svg" width="14" height="14" viewBox="0 0 14 14" fill="none" style="transition:transform 0.22s;flex-shrink:0;"><path d="M3 5l4 4 4-4" stroke="#6a6d77" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Comparer toutes les durées
+    </div>
+    <div class="ms-table-wrap" id="ms-table-wrap"></div>
+  </div>
+  <a class="ms-cta" href="https://www.marlon.fr/meetings/location/decouverte?uuid=d2404fff-3e28-4e08-8726-40bcd7c9c777" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px 24px;background:#00bd82;color:#fff;border:none;border-radius:999px;font-family:'Jost',sans-serif;font-size:15px;font-weight:600;text-decoration:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,189,130,0.35);transition:background 0.15s,transform 0.12s;box-sizing:border-box;">
+    Obtenir un devis personnalisé
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+</div>
+<script>
+(function(){
+  var TVA=1.20;
+  var TRANCHES=[
+    {min:0,max:7499,c:{36:3.289,48:2.607,60:2.202,72:1.936,84:1.748}},
+    {min:7500,max:14999,c:{36:3.200,48:2.515,60:2.107,72:1.837,84:1.646}},
+    {min:15000,max:34999,c:{36:3.178,48:2.493,60:2.084,72:1.813,84:1.622}},
+    {min:35000,max:49999,c:{36:3.156,48:2.470,60:2.060,72:1.789,84:1.597}},
+    {min:50000,max:99999,c:{36:3.135,48:2.447,60:2.037,72:1.765,84:1.573}},
+    {min:100000,max:9999999,c:{36:3.113,48:2.425,60:2.014,72:1.742,84:1.548}},
+  ];
+  var DUREES=[36,48,60,72,84];
+  var montant=15000,duree=60;
+  function tranche(m){return TRANCHES.find(function(t){return m>=t.min&&m<=t.max;})||TRANCHES[TRANCHES.length-1];}
+  function calc(m,d){var ht=m*tranche(m).c[d]/100;var ttc=ht*TVA;var total=ht*d;return{ht:ht,ttc:ttc,total:total,cout:total-m};}
+  function fmt(n){return Math.round(n).toLocaleString('fr-FR');}
+  function fmtE(n){return fmt(n)+' €';}
+  function update(){
+    var r=calc(montant,duree);
+    var el=document.getElementById('ms-ttc');
+    el.textContent=fmt(r.ttc);el.classList.remove('ms-bump');void el.offsetWidth;el.classList.add('ms-bump');
+    document.getElementById('ms-ht').textContent=fmt(r.ht);
+    document.getElementById('ms-period').textContent='/ mois pendant '+duree+' mois';
+    document.getElementById('ms-total').textContent=fmtE(r.total);
+    document.getElementById('ms-cout').textContent=fmtE(r.cout);
+    document.getElementById('ms-montant-display').textContent=fmtE(montant);
+    if(document.getElementById('ms-table-wrap').classList.contains('open'))buildTable();
+  }
+  function buildTable(){
+    var rows=DUREES.map(function(d){var r=calc(montant,d);return '<tr class="'+(d===duree?'ms-row-active':'')+'"><td>'+d+' mois'+(d===duree?' ✓':'')+'</td><td class="td-green">'+fmt(r.ttc)+' €</td><td class="td-muted">'+fmt(r.ht)+' €</td><td>'+fmtE(r.total)+'</td><td>'+fmtE(r.cout)+'</td></tr>';}).join('');
+    document.getElementById('ms-table-wrap').innerHTML='<table><thead><tr><th>Durée</th><th>Mensualité TTC</th><th>Mensualité HT</th><th>Total HT versé</th><th>Coût financement HT</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  }
+  window.msToggleTable=function(){var wrap=document.getElementById('ms-table-wrap');var svg=document.getElementById('ms-toggle-svg');var open=wrap.classList.toggle('open');svg.style.transform=open?'rotate(180deg)':'rotate(0deg)';if(open)buildTable();};
+  document.getElementById('ms-slider').addEventListener('input',function(e){montant=parseInt(e.target.value);document.getElementById('ms-input').value=montant;update();});
+  document.getElementById('ms-input').addEventListener('input',function(e){var v=parseInt(e.target.value)||1000;v=Math.min(Math.max(v,1000),500000);montant=v;document.getElementById('ms-slider').value=v;update();});
+  document.getElementById('ms-dur-group').addEventListener('click',function(e){var btn=e.target.closest('.ms-dur-btn');if(!btn)return;document.querySelectorAll('.ms-dur-btn').forEach(function(b){b.classList.remove('active');b.style.background='#fff';b.style.borderColor='#e3e6ec';b.style.color='#6a6d77';b.style.boxShadow='none';});btn.classList.add('active');btn.style.background='#00bd82';btn.style.borderColor='#00bd82';btn.style.color='#fff';btn.style.boxShadow='0 4px 12px rgba(0,189,130,0.3)';duree=parseInt(btn.dataset.val);update();});
+  update();
+})();
+</script>
+</body>
+</html>
