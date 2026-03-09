@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Jost', sans-serif; background: transparent; margin: 0; padding: 20px; }
+  body { font-family: 'Jost', sans-serif; background: transparent; margin: 0; padding: 0; }
   .sim { width: 100%; max-width: 880px; background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 40px rgba(1,38,53,.08), 0 1px 4px rgba(1,38,53,.05); margin: 0 auto; }
   .sim-body { display: flex; align-items: stretch; padding: 36px; gap: 0; }
   .sim-block + .sim-block { border-left: 1px solid #eef0f3; padding-left: 32px; margin-left: 32px; }
@@ -34,91 +34,3 @@
   .sim-note { font-size: 11px; color: #c4c9d4; text-align: center; letter-spacing: .02em; }
   @media (max-width: 680px) {
     .sim-body { flex-direction: column; padding: 24px 20px 20px; gap: 24px; }
-    .sim-block + .sim-block { border-left: none; border-top: 1px solid #eef0f3; padding-left: 0; margin-left: 0; padding-top: 24px; margin-top: 0; }
-    .sim-block-duration { flex: unset; }
-    .sim-block-result { flex: unset; }
-    .sim-footer { padding: 0 20px 24px; }
-    .amount-input { font-size: 26px; }
-    .result-ht { font-size: 30px; }
-  }
-</style>
-</head>
-<body>
-<div class="sim">
-  <div class="sim-body">
-    <div class="sim-block sim-block-amount">
-      <div class="sim-label">Coût des équipements</div>
-      <div class="amount-input-wrap">
-        <input type="number" class="amount-input" id="sim-amount" min="1" max="500000" step="500" value="25000" oninput="simUpdate()">
-        <span class="currency">€ HT</span>
-      </div>
-      <div class="amount-hint">Entrez le montant à financer</div>
-    </div>
-    <div class="sim-block sim-block-duration">
-      <div class="sim-label">Durée du contrat</div>
-      <select class="dur-select" id="sim-dur" onchange="simUpdate()">
-        <option value="36">36 mois</option>
-        <option value="48">48 mois</option>
-        <option value="60" selected>60 mois</option>
-        <option value="72">72 mois</option>
-        <option value="84">84 mois</option>
-      </select>
-    </div>
-    <div class="sim-block sim-block-result">
-      <div class="sim-label">Loyer mensuel</div>
-      <div class="result-card">
-        <div class="result-ht" id="res-ttc">— €<span class="result-unit">/mois TTC</span></div>
-        <div class="result-ttc" id="res-ht">— € HT / mois</div>
-      </div>
-    </div>
-  </div>
-  <div class="sim-footer">
-    <a class="sim-cta" href="https://www.marlon.fr/meetings/location/decouverte?uuid=d2404fff-3e28-4e08-8726-40bcd7c9c777" target="_blank" rel="noopener">
-      Obtenir un financement →
-    </a>
-    <span class="sim-note">Simulation indicative · Sous réserve d'acceptation du dossier</span>
-  </div>
-</div>
-<script>
-(function(){
-  var COEFFS = [
-    [0,7499,[3.289,2.607,2.202,1.936,1.748]],
-    [7500,14999,[3.200,2.515,2.107,1.837,1.646]],
-    [15000,34999,[3.178,2.493,2.084,1.813,1.622]],
-    [35000,49999,[3.156,2.470,2.060,1.789,1.597]],
-    [50000,99999,[3.135,2.447,2.037,1.765,1.573]],
-    [100000,500000,[3.113,2.425,2.014,1.742,1.548]]
-  ];
-  var DURS=[36,48,60,72,84];
-  function fmt(n){return Math.round(n).toLocaleString('fr-FR');}
-  function coeff(amount,dur){
-    var di=DURS.indexOf(dur);
-    for(var i=0;i<COEFFS.length;i++){if(amount>=COEFFS[i][0]&&amount<=COEFFS[i][1])return COEFFS[i][2][di];}
-    return COEFFS[COEFFS.length-1][2][DURS.indexOf(dur)];
-  }
-  window.simUpdate=function(){
-    var amount=parseFloat(document.getElementById('sim-amount').value)||0;
-    var dur=parseInt(document.getElementById('sim-dur').value);
-    if(amount<=0||amount>500000||isNaN(amount)){
-      document.getElementById('res-ttc').innerHTML='— €<span class="result-unit">/mois TTC</span>';
-      document.getElementById('res-ht').textContent='—';
-      return;
-    }
-    var ht=Math.round(amount*coeff(amount,dur)/100);
-    var ttc=Math.round(ht*1.2);
-    document.getElementById('res-ttc').innerHTML=fmt(ttc)+' €<span class="result-unit">/mois TTC</span>';
-    document.getElementById('res-ht').textContent=fmt(ht)+' € HT / mois';
-  };
-  simUpdate();
-})();
-</script>
-<script>
-(function(){
-  function sendHeight(){var h=document.documentElement.scrollHeight||document.body.scrollHeight;window.parent.postMessage({iframeHeight:h},'*');}
-  window.addEventListener('load',sendHeight);
-  window.addEventListener('resize',sendHeight);
-  new MutationObserver(sendHeight).observe(document.body,{subtree:true,childList:true,attributes:true});
-})();
-</script>
-</body>
-</html>
