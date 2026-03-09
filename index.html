@@ -6,6 +6,7 @@
 <title>Simulateur de loyer — Marlon</title>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  html, body { margin:0 !important; padding:0 !important; overflow:hidden !important; }
   #marlon-sim input[type=range] { -webkit-appearance:none!important;width:100%!important;height:4px!important;border-radius:10px!important;background:#e3e6ec!important;outline:none!important;cursor:pointer!important;margin-bottom:8px!important;display:block!important; }
   #marlon-sim input[type=range]::-webkit-slider-thumb { -webkit-appearance:none!important;width:20px!important;height:20px!important;border-radius:50%!important;background:#00bd82!important;border:3px solid #fff!important;box-shadow:0 2px 8px rgba(0,189,130,0.4)!important;cursor:pointer!important; }
   #marlon-sim input[type=number] { -moz-appearance:textfield!important; }
@@ -119,6 +120,12 @@
   function calc(m,d){var ht=m*tranche(m).c[d]/100;var ttc=ht*TVA;var total=ht*d;return{ht:ht,ttc:ttc,total:total,cout:total-m};}
   function fmt(n){return Math.round(n).toLocaleString('fr-FR');}
   function fmtE(n){return fmt(n)+' €';}
+  function sendHeight(){
+    var sim=document.getElementById('marlon-sim');
+    if(!sim)return;
+    var h=sim.getBoundingClientRect().height+32;
+    window.parent.postMessage({iframeHeight:h},'*');
+  }
   function update(){
     var r=calc(montant,duree);
     var el=document.getElementById('ms-ttc');
@@ -129,31 +136,20 @@
     document.getElementById('ms-cout').textContent=fmtE(r.cout);
     document.getElementById('ms-montant-display').textContent=fmtE(montant);
     if(document.getElementById('ms-table-wrap').classList.contains('open'))buildTable();
+    setTimeout(sendHeight,50);
   }
   function buildTable(){
     var rows=DUREES.map(function(d){var r=calc(montant,d);return '<tr class="'+(d===duree?'ms-row-active':'')+'"><td>'+d+' mois'+(d===duree?' ✓':'')+'</td><td class="td-green">'+fmt(r.ttc)+' €</td><td class="td-muted">'+fmt(r.ht)+' €</td><td>'+fmtE(r.total)+'</td><td>'+fmtE(r.cout)+'</td></tr>';}).join('');
     document.getElementById('ms-table-wrap').innerHTML='<table><thead><tr><th>Durée</th><th>Mensualité TTC</th><th>Mensualité HT</th><th>Total HT versé</th><th>Coût financement HT</th></tr></thead><tbody>'+rows+'</tbody></table>';
   }
-  window.msToggleTable=function(){var wrap=document.getElementById('ms-table-wrap');var svg=document.getElementById('ms-toggle-svg');var open=wrap.classList.toggle('open');svg.style.transform=open?'rotate(180deg)':'rotate(0deg)';if(open)buildTable();};
+  window.msToggleTable=function(){var wrap=document.getElementById('ms-table-wrap');var svg=document.getElementById('ms-toggle-svg');var open=wrap.classList.toggle('open');svg.style.transform=open?'rotate(180deg)':'rotate(0deg)';if(open)buildTable();setTimeout(sendHeight,100);};
   document.getElementById('ms-slider').addEventListener('input',function(e){montant=parseInt(e.target.value);document.getElementById('ms-input').value=montant;update();});
   document.getElementById('ms-input').addEventListener('input',function(e){var v=parseInt(e.target.value)||1000;v=Math.min(Math.max(v,1000),500000);montant=v;document.getElementById('ms-slider').value=v;update();});
   document.getElementById('ms-dur-group').addEventListener('click',function(e){var btn=e.target.closest('.ms-dur-btn');if(!btn)return;document.querySelectorAll('.ms-dur-btn').forEach(function(b){b.classList.remove('active');b.style.background='#fff';b.style.borderColor='#e3e6ec';b.style.color='#6a6d77';b.style.boxShadow='none';});btn.classList.add('active');btn.style.background='#00bd82';btn.style.borderColor='#00bd82';btn.style.color='#fff';btn.style.boxShadow='0 4px 12px rgba(0,189,130,0.3)';duree=parseInt(btn.dataset.val);update();});
+  window.addEventListener('load',function(){setTimeout(sendHeight,200);});
+  if(window.ResizeObserver){new ResizeObserver(function(){setTimeout(sendHeight,50);}).observe(document.getElementById('marlon-sim'));}
   update();
 })();
-</script>
-
-<script>
-// Auto-resize iframe
-function sendHeight() {
-  var h = document.getElementById('marlon-sim').offsetHeight + 48;
-  window.parent.postMessage({ iframeHeight: h }, '*');
-}
-window.addEventListener('load', sendHeight);
-window.addEventListener('resize', sendHeight);
-// Observer les changements de taille (ex: ouverture tableau)
-if (window.ResizeObserver) {
-  new ResizeObserver(sendHeight).observe(document.getElementById('marlon-sim'));
-}
 </script>
 </body>
 </html>
