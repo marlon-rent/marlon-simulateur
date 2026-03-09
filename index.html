@@ -3,148 +3,287 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulateur de loyer — Marlon</title>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Simulateur Marlon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  html,body{margin:0!important;padding:0!important;overflow:hidden!important;background:#f8f9fa;}
-  *{box-sizing:border-box;}
-  #sim{font-family:'Jost',sans-serif;padding:28px;background:#f8f9fa;}
-  .sim-row{display:flex;gap:16px;align-items:stretch;}
-  .sim-col{flex:1;}
-  .card{background:#fff;border-radius:14px;box-shadow:0 4px 20px rgba(34,35,38,0.07);padding:22px 24px;height:100%;}
-  .card-dark{background:#012635;border-radius:14px;padding:22px 24px;height:100%;}
-  .label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6a6d77;margin-bottom:10px;}
-  .label-light{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.35);margin-bottom:10px;}
-  #montant-val{font-size:26px;font-weight:700;color:#222326;letter-spacing:-0.5px;margin-bottom:12px;}
-  input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:10px;background:#e3e6ec;outline:none;cursor:pointer;display:block;margin-bottom:6px;}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#00bd82;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,189,130,0.4);cursor:pointer;}
-  .range-labels{display:flex;justify-content:space-between;font-size:10px;color:#6a6d77;opacity:0.5;margin-bottom:14px;}
-  .input-wrap{position:relative;}
-  .input-wrap input[type=number]{width:100%;padding:10px 40px 10px 14px;border:1.5px solid #e3e6ec;border-radius:10px;font-family:'Jost',sans-serif;font-size:14px;font-weight:500;color:#222326;-moz-appearance:textfield;}
-  .input-wrap input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
-  .input-wrap input[type=number]:focus{border-color:#00bd82;outline:none;}
-  .input-suffix{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;color:#6a6d77;opacity:0.4;pointer-events:none;}
-  select{width:100%;padding:10px 14px;border:1.5px solid #e3e6ec;border-radius:10px;font-family:'Jost',sans-serif;font-size:14px;font-weight:600;color:#222326;background:#fff;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236a6d77' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
-  select:focus{border-color:#00bd82;outline:none;}
-  .ttc-big{font-size:46px;font-weight:800;color:#fff;line-height:1;letter-spacing:-1.5px;}
-  .ttc-euro{font-size:20px;font-weight:700;color:#00bd82;vertical-align:super;margin-left:2px;}
-  .ht-line{font-size:13px;color:rgba(255,255,255,0.3);margin-top:4px;margin-bottom:16px;}
-  .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
-  .stat-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px 12px;}
-  .stat-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:rgba(255,255,255,0.25);margin-bottom:4px;}
-  .stat-val{font-size:14px;font-weight:700;color:#fff;}
-  .stat-val.green{color:#00bd82;}
-  .pills{display:flex;gap:6px;flex-wrap:wrap;}
-  .pill{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:rgba(0,189,130,0.1);border:1px solid rgba(0,189,130,0.2);border-radius:999px;font-size:10.5px;font-weight:500;color:rgba(255,255,255,0.55);white-space:nowrap;}
-  .pill-dot{width:4px;height:4px;border-radius:50%;background:#00bd82;flex-shrink:0;}
-  .cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 20px;background:#00bd82;color:#fff;border:none;border-radius:999px;font-family:'Jost',sans-serif;font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;box-shadow:0 4px 14px rgba(0,189,130,0.35);transition:background 0.15s,transform 0.12s;margin-top:16px;}
-  .cta:hover{background:#009e6d;transform:translateY(-1px);}
-  @keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
-  .bump{animation:bump 0.2s ease;}
-  @media(max-width:700px){
-    #sim{padding:16px;}
-    .sim-row{flex-direction:column;}
-    .ttc-big{font-size:38px;}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: transparent;
+    margin: 0;
+    padding: 20px;
+  }
+
+  .sim {
+    width: 100%;
+    max-width: 880px;
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 40px rgba(1,38,53,.08), 0 1px 4px rgba(1,38,53,.05);
+    margin: 0 auto;
+  }
+
+  .sim-body {
+    display: flex;
+    align-items: stretch;
+    padding: 36px;
+    gap: 0;
+  }
+
+  .sim-block + .sim-block {
+    border-left: 1px solid #eef0f3;
+    padding-left: 32px;
+    margin-left: 32px;
+  }
+
+  .sim-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #b0b7c3;
+    margin-bottom: 12px;
+  }
+
+  .sim-block-amount {
+    flex: 0 0 240px;
+  }
+
+  .amount-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .amount-input-wrap .currency {
+    position: absolute;
+    right: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #9ca3af;
+    pointer-events: none;
+  }
+  .amount-input {
+    width: 100%;
+    font-family: 'Jost', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: #012635;
+    letter-spacing: -.02em;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px 52px 14px 18px;
+    outline: none;
+    transition: border-color .15s;
+    background: #fff;
+    -moz-appearance: textfield;
+  }
+  .amount-input::-webkit-outer-spin-button,
+  .amount-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .amount-input:focus { border-color: #00bd82; }
+
+  .amount-hint {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #b0b7c3;
+    font-weight: 500;
+  }
+
+  .sim-block-duration {
+    flex: 0 0 170px;
+  }
+
+  .dur-select {
+    width: 100%;
+    font-family: 'Jost', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #012635;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px 40px 14px 16px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background: #fff url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8"><path d="M1 1l5 5 5-5" stroke="%23012635" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>') no-repeat right 14px center;
+    transition: border-color .15s;
+  }
+  .dur-select:focus { border-color: #00bd82; }
+
+  .sim-block-result {
+    flex: 1 1 0;
+  }
+
+  .result-card {
+    background: #012635;
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .result-ht {
+    font-size: 36px;
+    font-weight: 800;
+    color: #00bd82;
+    letter-spacing: -.03em;
+    line-height: 1;
+  }
+  .result-unit {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,.35);
+    margin-left: 3px;
+  }
+  .result-ttc {
+    font-size: 12px;
+    color: rgba(255,255,255,.3);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .sim-footer {
+    padding: 0 36px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .sim-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #00bd82;
+    color: #fff;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: 14px 32px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: background .15s, transform .1s, box-shadow .15s;
+    box-shadow: 0 4px 16px rgba(0,189,130,.25);
+  }
+  .sim-cta:hover {
+    background: #00a872;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,189,130,.35);
+  }
+  .sim-note {
+    font-size: 11px;
+    color: #c4c9d4;
+    text-align: center;
+    letter-spacing: .02em;
+  }
+
+  @media (max-width: 680px) {
+    .sim-body { flex-direction: column; padding: 24px 20px 20px; gap: 24px; }
+    .sim-block + .sim-block { border-left: none; border-top: 1px solid #eef0f3; padding-left: 0; margin-left: 0; padding-top: 24px; margin-top: 0; }
+    .sim-block-duration { flex: unset; }
+    .sim-block-result { flex: unset; }
+    .sim-footer { padding: 0 20px 24px; }
+    .amount-input { font-size: 26px; }
+    .result-ht { font-size: 30px; }
   }
 </style>
 </head>
 <body>
-<div id="sim">
-  <div class="sim-row">
-    <!-- COL 1: Montant + Durée -->
-    <div class="sim-col" style="max-width:340px;min-width:260px;flex:0 0 auto;">
-      <div class="card">
-        <div class="label">Montant HT du matériel</div>
-        <div id="montant-val">15 000 €</div>
-        <input type="range" id="slider" min="1000" max="500000" step="500" value="15000">
-        <div class="range-labels"><span>1 000 €</span><span>500 000 €</span></div>
-        <div class="input-wrap" style="margin-bottom:20px;">
-          <input type="number" id="inp" value="15000" min="1000" max="500000">
-          <span class="input-suffix">€ HT</span>
-        </div>
-        <div class="label">Durée du contrat</div>
-        <select id="duree">
-          <option value="36">36 mois</option>
-          <option value="48">48 mois</option>
-          <option value="60" selected>60 mois</option>
-          <option value="72">72 mois</option>
-          <option value="84">84 mois</option>
-        </select>
+
+<div class="sim">
+  <div class="sim-body">
+
+    <div class="sim-block sim-block-amount">
+      <div class="sim-label">Coût des équipements</div>
+      <div class="amount-input-wrap">
+        <input type="number" class="amount-input" id="sim-amount"
+          min="1" max="500000" step="500" value="25000"
+          oninput="simUpdate()">
+        <span class="currency">€ HT</span>
+      </div>
+      <div class="amount-hint">Entrez le montant à financer</div>
+    </div>
+
+    <div class="sim-block sim-block-duration">
+      <div class="sim-label">Durée du contrat</div>
+      <select class="dur-select" id="sim-dur" onchange="simUpdate()">
+        <option value="36">36 mois</option>
+        <option value="48">48 mois</option>
+        <option value="60" selected>60 mois</option>
+        <option value="72">72 mois</option>
+        <option value="84">84 mois</option>
+      </select>
+    </div>
+
+    <div class="sim-block sim-block-result">
+      <div class="sim-label">Loyer mensuel</div>
+      <div class="result-card">
+        <div class="result-ht" id="res-ttc">— €<span class="result-unit">/mois TTC</span></div>
+        <div class="result-ttc" id="res-ht">— € HT / mois</div>
       </div>
     </div>
-    <!-- COL 2: Résultat -->
-    <div class="sim-col">
-      <div class="card-dark">
-        <div class="label-light">Mensualité estimée</div>
-        <div style="display:flex;align-items:baseline;gap:0;margin-bottom:2px;">
-          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#00bd82;margin-right:8px;">TTC</span>
-          <span id="ttc" class="ttc-big">376</span><span class="ttc-euro">€</span>
-        </div>
-        <div class="ht-line">soit <span id="ht">313</span> € HT &nbsp;·&nbsp; <span id="period">60 mois</span></div>
-        <div class="stats">
-          <div class="stat-box"><div class="stat-lbl">Total versé HT</div><div id="total" class="stat-val">18 756 €</div></div>
-          <div class="stat-box"><div class="stat-lbl">Coût financement HT</div><div id="cout" class="stat-val green">3 756 €</div></div>
-        </div>
-        <div class="pills">
-          <div class="pill"><span class="pill-dot"></span>Sans apport</div>
-          <div class="pill"><span class="pill-dot"></span>Loyers déductibles</div>
-          <div class="pill"><span class="pill-dot"></span>Option d'achat</div>
-          <div class="pill"><span class="pill-dot"></span>Trésorerie préservée</div>
-        </div>
-        <a class="cta" href="https://www.marlon.fr/meetings/location/decouverte?uuid=d2404fff-3e28-4e08-8726-40bcd7c9c777" target="_blank">
-          Obtenir un devis personnalisé
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-      </div>
-    </div>
+
+  </div>
+
+  <div class="sim-footer">
+    <a class="sim-cta"
+      href="https://www.marlon.fr/meetings/location/decouverte?uuid=d2404fff-3e28-4e08-8726-40bcd7c9c777">
+      Obtenir un financement →
+    </a>
+    <span class="sim-note">Simulation indicative · Sous réserve d'acceptation du dossier</span>
   </div>
 </div>
+
 <script>
 (function(){
-  var TVA=1.20;
-  var T=[
-    {min:0,max:7499,c:{36:3.289,48:2.607,60:2.202,72:1.936,84:1.748}},
-    {min:7500,max:14999,c:{36:3.200,48:2.515,60:2.107,72:1.837,84:1.646}},
-    {min:15000,max:34999,c:{36:3.178,48:2.493,60:2.084,72:1.813,84:1.622}},
-    {min:35000,max:49999,c:{36:3.156,48:2.470,60:2.060,72:1.789,84:1.597}},
-    {min:50000,max:99999,c:{36:3.135,48:2.447,60:2.037,72:1.765,84:1.573}},
-    {min:100000,max:9999999,c:{36:3.113,48:2.425,60:2.014,72:1.742,84:1.548}},
+  var COEFFS = [
+    [0,      7499,   [3.289,2.607,2.202,1.936,1.748]],
+    [7500,   14999,  [3.200,2.515,2.107,1.837,1.646]],
+    [15000,  34999,  [3.178,2.493,2.084,1.813,1.622]],
+    [35000,  49999,  [3.156,2.470,2.060,1.789,1.597]],
+    [50000,  99999,  [3.135,2.447,2.037,1.765,1.573]],
+    [100000, 500000, [3.113,2.425,2.014,1.742,1.548]]
   ];
-  var m=15000,d=60;
-  function tr(v){return T.find(function(t){return v>=t.min&&v<=t.max;})||T[T.length-1];}
-  function calc(v,dur){var ht=v*tr(v).c[dur]/100;return{ht:ht,ttc:ht*TVA,total:ht*dur,cout:ht*dur-v};}
-  function fmt(n){return Math.round(n).toLocaleString('fr-FR');}
-  function fmtE(n){return fmt(n)+' €';}
-  function sendH(){
-    var h=document.getElementById('sim').getBoundingClientRect().height+8;
-    window.parent.postMessage({iframeHeight:h},'*');
+  var DURS = [36,48,60,72,84];
+
+  function fmt(n){ return Math.round(n).toLocaleString('fr-FR'); }
+
+  function coeff(amount, dur){
+    var di = DURS.indexOf(dur);
+    for(var i=0;i<COEFFS.length;i++){
+      if(amount >= COEFFS[i][0] && amount <= COEFFS[i][1]) return COEFFS[i][2][di];
+    }
+    return COEFFS[COEFFS.length-1][2][DURS.indexOf(dur)];
   }
-  function upd(){
-    var r=calc(m,d);
-    var el=document.getElementById('ttc');
-    el.textContent=fmt(r.ttc);
-    el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump');
-    document.getElementById('ht').textContent=fmt(r.ht);
-    document.getElementById('period').textContent=d+' mois';
-    document.getElementById('total').textContent=fmtE(r.total);
-    document.getElementById('cout').textContent=fmtE(r.cout);
-    document.getElementById('montant-val').textContent=fmtE(m);
-    setTimeout(sendH,50);
-  }
-  document.getElementById('slider').addEventListener('input',function(e){
-    m=parseInt(e.target.value);document.getElementById('inp').value=m;upd();
-  });
-  document.getElementById('inp').addEventListener('input',function(e){
-    var v=parseInt(e.target.value)||1000;v=Math.min(Math.max(v,1000),500000);
-    m=v;document.getElementById('slider').value=v;upd();
-  });
-  document.getElementById('duree').addEventListener('change',function(e){
-    d=parseInt(e.target.value);upd();
-  });
-  window.addEventListener('load',function(){setTimeout(sendH,200);});
-  if(window.ResizeObserver){new ResizeObserver(function(){setTimeout(sendH,80);}).observe(document.getElementById('sim'));}
-  upd();
+
+  window.simUpdate = function(){
+    var amount = parseFloat(document.getElementById('sim-amount').value) || 0;
+    var dur = parseInt(document.getElementById('sim-dur').value);
+    if(amount <= 0 || amount > 500000 || isNaN(amount)){
+      document.getElementById('res-ttc').innerHTML = '— €<span class="result-unit">/mois TTC</span>';
+      document.getElementById('res-ht').textContent = '—';
+      return;
+    }
+    var ht = Math.round(amount * coeff(amount, dur) / 100);
+    var ttc = Math.round(ht * 1.2);
+    document.getElementById('res-ttc').innerHTML = fmt(ttc)+' €<span class="result-unit">/mois TTC</span>';
+    document.getElementById('res-ht').textContent = fmt(ht)+' € HT / mois';
+  };
+
+  simUpdate();
 })();
 </script>
+
+<script>
+(function(){
+  function sendHeight(){
+    var h = document.documentElement.scrollHeight || document.body.scrollHeight;
+    window.parent.postMessage({ iframeHeight: h }, '*');
+  }
+  window.addEventListener('load', sendHeight);
+  window.addEventListener('resize', sendHeight);
+  new MutationObserver(sendHeight).observe(document.body, { subtree: true, childList: true, attributes: true });
+})();
+</script>
+
 </body>
 </html>
