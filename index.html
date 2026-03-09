@@ -141,5 +141,19 @@
   update();
 })();
 </script>
+
+<script>
+// Auto-resize iframe
+function sendHeight() {
+  var h = document.getElementById('marlon-sim').offsetHeight + 48;
+  window.parent.postMessage({ iframeHeight: h }, '*');
+}
+window.addEventListener('load', sendHeight);
+window.addEventListener('resize', sendHeight);
+// Observer les changements de taille (ex: ouverture tableau)
+if (window.ResizeObserver) {
+  new ResizeObserver(sendHeight).observe(document.getElementById('marlon-sim'));
+}
+</script>
 </body>
 </html>
